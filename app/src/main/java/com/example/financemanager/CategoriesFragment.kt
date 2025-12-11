@@ -15,9 +15,10 @@ class CategoriesFragment : Fragment() {
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
 
-    // Инициализация AndroidViewModel
     private val viewModel: FinanceViewModel by activityViewModels()
-    private lateinit var categoryAdapter: CategoryAdapter
+
+    // КРИТИЧЕСКИ ВАЖНО: Используем адаптер БЕЗ ЛОГИКИ РАСХОДОВ
+    private lateinit var categoryAdapter: CategoryManagementAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCategoriesBinding.inflate(inflater, container, false)
@@ -27,12 +28,12 @@ class CategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        categoryAdapter = CategoryAdapter(
+        // Инициализация CategoryManagementAdapter
+        categoryAdapter = CategoryManagementAdapter(
             items = emptyList(),
-            expenseMap = emptyMap(),
 
             onDeleteClicked = { category ->
-                // Вызываем удаление и Toast
+                // Используем полное удаление категории
                 viewModel.deleteCategory(category.id)
                 Toast.makeText(context, "Категория '${category.name}' удалена!", Toast.LENGTH_SHORT).show()
             }
@@ -40,22 +41,18 @@ class CategoriesFragment : Fragment() {
         binding.rvCategories.adapter = categoryAdapter
         binding.rvCategories.layoutManager = LinearLayoutManager(context)
 
-        // Наблюдение за категориями: обновляет список при добавлении/удалении категории
+        // Наблюдение ТОЛЬКО за категориями
         viewModel.categories.observe(viewLifecycleOwner) { categories ->
-            val currentExpensesMap = viewModel.getCurrentMonthExpensesGroupedByCategory()
-            categoryAdapter.updateData(categories, currentExpensesMap)
+            // Передаем только список категорий в адаптер. Расходы здесь не используются.
+            categoryAdapter.updateData(categories)
 
             val isListEmpty = categories.isEmpty()
             binding.tvNoCategories.visibility = if (isListEmpty) View.VISIBLE else View.GONE
             binding.rvCategories.visibility = if (isListEmpty) View.GONE else View.VISIBLE
         }
 
-        // Наблюдение за расходами: обновляет суммы, если расход меняется на другом экране
-        viewModel.expenses.observe(viewLifecycleOwner) {
-            val categories = viewModel.categories.value.orEmpty()
-            val currentExpensesMap = viewModel.getCurrentMonthExpensesGroupedByCategory()
-            categoryAdapter.updateData(categories, currentExpensesMap)
-        }
+        // !!!!!!!! КОД ДЛЯ viewModel.expenses.observe УДАЛЕН !!!!!!!!
+        // Это гарантирует, что список не будет пытаться обновить суммы при добавлении расхода.
 
         binding.btnAddCategory.setOnClickListener {
             addCategory()

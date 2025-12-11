@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.financemanager.databinding.FragmentHomeBinding
-import kotlin.math.roundToInt
 
 class HomeFragment : Fragment() {
 
@@ -19,7 +19,10 @@ class HomeFragment : Fragment() {
     private val viewModel: FinanceViewModel by activityViewModels()
     private lateinit var categoryAdapter: CategoryAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -27,65 +30,57 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Инициализация адаптера
+        // 1. Инициализация адаптера для отображения категорий/расходов
         categoryAdapter = CategoryAdapter(
             items = emptyList(),
             expenseMap = emptyMap(),
-            // Для главного экрана удаление не используется, но конструктор требует колбэк
-            onDeleteClicked = {}
+
+            // ЛОГИКА УДАЛЕНИЯ: Обнуляет расходы категории за текущий месяц (по вашему требованию)
+            onDeleteClicked = { category ->
+                viewModel.clearExpensesForCategory(category.id) // <-- НОВАЯ ФУНКЦИЯ
+                Toast.makeText(context, "Расходы категории '${category.name}' за месяц обнулены.", Toast.LENGTH_SHORT).show()
+            }
         )
-        binding.rvTopCategories.adapter = categoryAdapter
-        binding.rvTopCategories.layoutManager = LinearLayoutManager(context)
-        binding.rvTopCategories.isNestedScrollingEnabled = false
+        binding.rvCategoriesSummary.adapter = categoryAdapter
+        binding.rvCategoriesSummary.layoutManager = LinearLayoutManager(context)
 
+        // 2. Единый наблюдатель LiveData для автоматического обновления всех элементов UI
+        val updateUiObserver = androidx.lifecycle.Observer<Any> {
 
-        // 2. Наблюдение за общим балансом (сумма трат за ТЕКУЩИЙ месяц)
-        viewModel.totalExpense.observe(viewLifecycleOwner) { total ->
-            binding.tvTotalBalance.text = "${total.roundToInt()} ₽"
-        }
+            val categories = viewModel.categories.value.orEmpty()
+            val currentExpensesMap = viewModel.getCurrentMonthExpensesGroupedByCategory()
+            val total = viewModel.totalExpense.value ?: 0.0
 
-        // 3. Наблюдение за расходами и категориями
-        viewModel.expenses.observe(viewLifecycleOwner) {
+            // ФИЛЬТРАЦИЯ: Показываем только те категории, у которых есть расходы > 0
+            val filteredCategories = categories.filter {
+                (currentExpensesMap[it.id] ?: 0.0) > 0
+            }
 
-            // Получаем расходы только за ТЕКУЩИЙ МЕСЯЦ
-            val currentMonthExpensesMap = viewModel.getCurrentMonthExpensesGroupedByCategory()
-            val categoriesList = viewModel.categories.value.orEmpty()
+            // Обновляем общую сумму (Статистика 1)
+            binding.tvTotalExpenses.text = String.format("%,.0f ₽", total)
 
-            // ЛОГИКА ДЛЯ КРУГОВОЙ ДИАГРАММЫ
-            val pieChartData = currentMonthExpensesMap
-                .mapNotNull { (id, amount) ->
-                    if (amount > 0) {
-                        categoriesList.find { it.id == id }?.let { category ->
-                            PieChartData(amount, category.colorHex)
-                        }
-                    } else {
-                        null
-                    }
-                }
+            // Обновляем список категорий: передаем ТОЛЬКО отфильтрованные категории
+            categoryAdapter.updateData(filteredCategories, currentExpensesMap)
 
-            binding.pieChartView.setData(pieChartData)
+            // Отрисовка круговой диаграммы (Статистика 2)
+            if (isAdded && total >= 0) {
+                val sizeInPx = (150 * resources.displayMetrics.density).toInt()
 
-            // ЛОГИКА ДЛЯ РАЗДЕЛА "ВАШИ КАТЕГОРИИ" (все категории с тратами > 0)
-            val categoriesWithExpenses = currentMonthExpensesMap.entries
-                .filter { it.value > 0.0 }
-                .sortedByDescending { it.value } // Сортировка по убыванию суммы
-                .mapNotNull { (id, amount) ->
-                    categoriesList.find { it.id == id }
-                }
-
-            categoryAdapter.updateData(categoriesWithExpenses, currentMonthExpensesMap)
-
-            // Управление видимостью списка
-            if (categoriesWithExpenses.isEmpty()) {
-                binding.rvTopCategories.visibility = View.GONE
-            } else {
-                binding.rvTopCategories.visibility = View.VISIBLE
+                val chartBitmap = PieChartRenderer.createChart(
+                    categories = filteredCategories, // Диаграмма также использует отфильтрованный список
+                    expenses = currentExpensesMap,
+                    total = total,
+                    size = sizeInPx
+                )
+                binding.pieChartView.setImageBitmap(chartBitmap)
             }
         }
 
-        // 4. ОБРАБОТЧИК КНОПКИ ДОБАВЛЕНИЯ РАСХОДА (FAB)
+        viewModel.categories.observe(viewLifecycleOwner, updateUiObserver)
+        viewModel.expenses.observe(viewLifecycleOwner, updateUiObserver)
+
+        // 3. Обработчик кнопки добавления расхода
         binding.fabAddExpense.setOnClickListener {
-            // Переход на AddExpenseFragment (действие должно быть определено в nav_graph.xml)
             findNavController().navigate(R.id.action_homeFragment_to_addExpenseFragment)
         }
     }

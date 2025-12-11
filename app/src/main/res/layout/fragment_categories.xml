@@ -9,82 +9,80 @@
     tools:context=".CategoriesFragment">
 
     <TextView
-        android:id="@+id/tv_categories_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Управление категориями"
-        android:textColor="@color/text_white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container_add_category"
+        android:id="@+id/tv_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/bg_card_rounded"
-        android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"
+        android:text="Управление Категориями"
+        android:textColor="@color/text_white"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_categories_title">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <EditText
-            android:id="@+id/et_new_category"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:background="@android:color/transparent"
-            android:hint="Название новой категории"
-            android:inputType="textCapSentences"
-            android:padding="10dp"
-            android:textColor="@color/text_white"
-            android:textColorHint="@color/text_gray"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btn_add_category"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <EditText
+        android:id="@+id/et_new_category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:hint="Название новой категории"
+        android:textColor="@color/text_white"
+        android:textColorHint="@color/text_gray"
+        android:backgroundTint="@color/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_add_category"
+        app:layout_constraintTop_toBottomOf="@id/tv_header"
+        android:inputType="textCapSentences"
+        android:autofillHints="category"/>
 
-        <Button
-            android:id="@+id/btn_add_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Добавить"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/btn_add_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Добавить"
+        android:backgroundTint="@color/primary_green"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/et_new_category"
+        app:layout_constraintBottom_toBottomOf="@id/et_new_category"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_new_category"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_categories"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:paddingHorizontal="16dp"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/container_add_category"
-        tools:listitem="@layout/item_category" />
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        tools:listitem="@layout/item_category_management" />
 
     <TextView
         android:id="@+id/tv_no_categories"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Список категорий пуст. Добавьте первую категорию!"
+        android:text="Категории пока не добавлены."
         android:textColor="@color/text_gray"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:padding="24dp"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/rv_categories"
-        app:layout_constraintBottom_toBottomOf="@id/rv_categories"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rv_categories"
+        app:layout_constraintBottom_toBottomOf="@id/rv_categories" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

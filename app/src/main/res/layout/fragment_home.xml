@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,84 +8,67 @@
     android:background="@color/background_dark"
     tools:context=".HomeFragment">
 
+    <ImageView
+        android:id="@+id/pie_chart_view"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="Круговая диаграмма расходов"
+        tools:src="@tools:sample/avatars"/>
+
     <TextView
-        android:id="@+id/tv_title_balance"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_title_month"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:text="Общие расходы"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Расходы за Декабрь"
         android:textColor="@color/text_gray"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/pie_chart_view"
+        app:layout_constraintTop_toTopOf="@+id/pie_chart_view" />
 
     <TextView
-        android:id="@+id/tv_total_balance"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_total_expenses"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="7000 ₽"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:text="0 ₽"
         android:textColor="@color/text_white"
         android:textSize="32sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/tv_title_balance"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title_balance"
-        tools:text="15400 ₽" />
-
-    <com.example.financemanager.CustomPieChartView
-        android:id="@+id/pie_chart_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/pie_chart_view"
+        app:layout_constraintTop_toBottomOf="@id/tv_title_month"
+        tools:text="15 324 ₽" />
 
     <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
+        android:id="@+id/divider_top"
+        android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="20dp"
         android:background="@color/divider"
-        app:layout_constraintTop_toBottomOf="@id/tv_total_balance" />
-
-    <TextView
-        android:id="@+id/tv_top_categories_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:text="Ваши категории"
-        android:textColor="@color/text_white"
-        android:textSize="20sp"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pie_chart_view" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/container_top_categories"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/bg_card_rounded"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_top_categories_title">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_top_categories"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:clipToPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:listitem="@layout/item_category" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pie_chart_view"/> <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/rv_categories_summary"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:clipToPadding="false"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/divider_top"
+    tools:listitem="@layout/item_category" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_expense"
@@ -92,11 +76,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
-        android:contentDescription="Добавить расход"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/accent_blue"
+        app:tint="@color/white"
+        app:backgroundTint="@color/primary_green"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/text_white" />
+        android:contentDescription="Добавить расход"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

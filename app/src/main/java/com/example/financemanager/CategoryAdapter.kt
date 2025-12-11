@@ -3,7 +3,7 @@ package com.example.financemanager
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.View // Импорт для доступа к View.VISIBLE и View.GONE
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financemanager.databinding.ItemCategoryBinding
 import kotlin.math.roundToInt
