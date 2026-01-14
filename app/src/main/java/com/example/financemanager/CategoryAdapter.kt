@@ -78,5 +78,6 @@ class CategoryAdapter(
         this.items = sortedCategories
         this.expenseMap = newExpenseMap
         notifyDataSetChanged()
+        //big dick
     }
 }
